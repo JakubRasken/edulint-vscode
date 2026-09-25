@@ -4,7 +4,7 @@
   "description": "EduLint VS Code Extension for students at the Faculty of Informatics, Masaryk University",
   "icon": "assets/icon.png",
   "publisher": "matousekm",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "engines": {
     "vscode": "^1.82.0"
   },
@@ -24,9 +24,93 @@
     "commands": [
       {
         "command": "edulint.lint",
-        "title": "EduLint: Run Linting"
+        "title": "EduLint: Run Linting",
+        "icon": "$(checklist)"
+      },
+      {
+        "command": "edulint.explain",
+        "title": "EduLint: Show Explanation"
+      },
+      {
+        "command": "edulint.checkForUpdates",
+        "title": "EduLint: Check for Updates"
+      },
+      {
+        "command": "edulint.installEdulint",
+        "title": "EduLint: Install edulint Package"
       }
-    ]
+    ],
+    "keybindings": [
+      {
+        "command": "edulint.lint",
+        "key": "ctrl+alt+l",
+        "mac": "cmd+alt+l",
+        "when": "editorLangId == python"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "edulint.lint",
+          "when": "editorLangId == python",
+          "group": "navigation@100"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "edulint.explain",
+          "when": "false"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "EduLint",
+      "properties": {
+        "edulint.enable": {
+          "type": "boolean",
+          "default": true,
+          "description": "Run EduLint analysis on Python files."
+        },
+        "edulint.pythonPath": {
+          "type": "string",
+          "default": "",
+          "description": "Python interpreter used to run edulint. Leave empty to use the interpreter selected by the Python extension."
+        },
+        "edulint.lintOn": {
+          "type": "string",
+          "enum": [
+            "save",
+            "openAndSave",
+            "all"
+          ],
+          "enumDescriptions": [
+            "Only when a Python file is saved.",
+            "When a Python file is opened or saved.",
+            "When a Python file is opened, saved, or becomes the active editor."
+          ],
+          "default": "all",
+          "description": "When EduLint should analyse a file."
+        },
+        "edulint.extraArgs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "Extra arguments appended to `edulint check` (for example [\"-o\", \"config-file\", \"ib111\"])."
+        },
+        "edulint.disableVersionCheck": {
+          "type": "boolean",
+          "default": true,
+          "description": "Pass --disable-version-check so edulint does not periodically query PyPI while linting."
+        },
+        "edulint.showExplanations": {
+          "type": "boolean",
+          "default": true,
+          "description": "Attach edulint's explanation (why it matters plus examples) to each reported problem."
+        }
+      }
+    }
   },
   "scripts": {
     "lint": "eslint .",
