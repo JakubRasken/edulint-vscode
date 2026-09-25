@@ -4,6 +4,14 @@ All notable changes to the "edulint" extension will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [0.4.1]
+
+- Drop the hard `ms-python.python` extension dependency: it made VS Code disable this
+  extension entirely when the Python extension was absent, even though `edulint.pythonPath`
+  makes it optional
+- When no interpreter can be resolved, show a one-time prompt offering to install the Python
+  extension or open the `edulint.pythonPath` setting
+
 ## [0.4.0]
 
 - Attach edulint's explanation (why it matters plus examples) to every reported problem, and add an "EduLint: explain <code>" quick fix that opens it in an editor

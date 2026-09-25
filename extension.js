@@ -33,6 +33,7 @@ let debounceTimers = new Map()
 let explanations = null
 let explanationsAttempted = false
 let installPromptShown = false
+let interpreterPromptShown = false
 
 function config() {
   return vscode.workspace.getConfiguration('edulint')
@@ -188,6 +189,7 @@ async function lintDocument(doc) {
   const pythonPath = await resolveInterpreter(doc)
   if (!pythonPath) {
     log.error('No Python interpreter available')
+    promptNoInterpreter()
     return
   }
 
@@ -465,6 +467,27 @@ class ExplanationCodeActionProvider {
     }
     return actions
   }
+}
+
+function promptNoInterpreter() {
+  if (interpreterPromptShown) {
+    return
+  }
+  interpreterPromptShown = true
+  vscode.window
+    .showWarningMessage(
+      'EduLint: no Python interpreter. Install the Python extension, or set "edulint.pythonPath" to an interpreter that has edulint installed.',
+      'Install Python extension',
+      'Open Settings'
+    )
+    .then((choice) => {
+      interpreterPromptShown = false
+      if (choice === 'Install Python extension') {
+        vscode.commands.executeCommand('workbench.extensions.installExtension', 'ms-python.python')
+      } else if (choice === 'Open Settings') {
+        vscode.commands.executeCommand('workbench.action.openSettings', 'edulint.pythonPath')
+      }
+    })
 }
 
 function promptInstall(pythonPath) {
