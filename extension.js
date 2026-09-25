@@ -1,6 +1,6 @@
 const vscode = require('vscode')
 const { promisify } = require('util')
-const exec = promisify(require('child_process').exec)
+const execFile = promisify(require('child_process').execFile)
 
 /** @type {vscode.LogOutputChannel} */
 let log = null
@@ -83,8 +83,20 @@ async function getPythonInterpreter() {
   const pythonExtension = vscode.extensions.getExtension('ms-python.python')
   if (pythonExtension && pythonExtension.exports) {
     const pythonAPI = pythonExtension.exports
-    const pythonPath = await pythonAPI.settings.getExecutionDetails()
-    return pythonPath.execCommand[0] || null
+    try {
+      const details = await pythonAPI.settings.getExecutionDetails()
+      // Newer Python extensions return { execCommand: [...] }, older ones expose the path directly.
+      if (details) {
+        if (Array.isArray(details.execCommand) && details.execCommand.length > 0) {
+          return details.execCommand[0]
+        }
+        if (details.path) {
+          return details.path
+        }
+      }
+    } catch (err) {
+      log.error(`Could not determine Python interpreter: ${err}`)
+    }
   }
   return null
 }
@@ -111,11 +123,12 @@ async function updateDiagnosticCollection(doc, diagCollection) {
     const diagnostic = {
       code: problem.code + (problem.symbol? `:${problem.symbol}` : ''),
       message: problem.text,
+      // edulint reports 1-based columns; VS Code ranges are 0-based
       range: new vscode.Range(
         problem.line - 1,
-        problem.column,
+        (problem.column || 1) - 1,
         (problem.end_line || problem.line) - 1,
-        problem.end_column || problem.column
+        (problem.end_column || problem.column || 1) - 1
       ),
       // ib111.toml reuses the enabled_by field to indicate the severity
       severity: problem.enabled_by === 'error' ? vscode.DiagnosticSeverity.Error : vscode.DiagnosticSeverity.Warning,
@@ -134,19 +147,22 @@ async function updateDiagnosticCollection(doc, diagCollection) {
 async function getEdulintOutput(filePath) {
   const pythonPath = await getPythonInterpreter()
   if (!pythonPath) {
-    log.error("python interpreter not set")
-    return
+    log.error('python interpreter not set')
+    return { problems: [] }
   }
 
   let out = {}
   try {
-    out = await exec(`${pythonPath} -m edulint check --json "${filePath}"`)
+    out = await execFile(pythonPath, ['-m', 'edulint', 'check', '--json', filePath])
   } catch (err) {
     out.stdout = err.stdout
     out.stderr = err.stderr
   }
-  if (out.stderr !== '') {
+  if (out.stderr) {
     log.error(out.stderr)
+  }
+  if (!out.stdout) {
+    return { problems: [] }
   }
 
   return JSON.parse(out.stdout)
