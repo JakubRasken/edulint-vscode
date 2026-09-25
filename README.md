@@ -71,6 +71,8 @@ This repository is a **modified fork** of
   licensed under the GNU General Public License v3.0.
 - Modifications in this fork are copyright their author and are released under the same
   GNU General Public License v3.0, as required by section 5 of that licence.
+- The icon (`assets/icon.png`) is the fork author's own artwork; it does not come from the
+  upstream project.
 - `EduLint` is the name of the upstream project (GiraffeReversed/edulint). This fork is not
   affiliated with or endorsed by the upstream authors or Masaryk University.
 

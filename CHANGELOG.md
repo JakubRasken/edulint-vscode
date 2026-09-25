@@ -4,6 +4,15 @@ All notable changes to the "edulint" extension will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [0.4.2]
+
+- New icon (the fork author's own logo), replacing the upstream asset
+- Rename the extension to `edulint-vscode-fork` / "EduLint (fork)" and set the publisher to
+  `jakubrasken`: the Marketplace requires extension names and display names to be globally
+  unique, so the upstream names could never be published
+- Point `repository` at this fork instead of upstream, and describe the extension accurately
+  rather than as the Faculty of Informatics extension
+
 ## [0.4.1]
 
 - Drop the hard `ms-python.python` extension dependency: it made VS Code disable this

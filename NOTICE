@@ -30,10 +30,13 @@ that licence. The changes are described in CHANGELOG.md; in short:
   * attach edulint's explanations, with a quick fix to open them
   * add settings, a keybinding, an editor title button and an update check
   * cancel superseded runs so stale results cannot overwrite newer ones
+  * replace the extension icon (assets/icon.png) with the fork author's own artwork, and
+    rename the extension to edulint-vscode-fork / "EduLint (fork)"
 
 Trademarks
 ----------
 
 "EduLint" is the name of the upstream project. Version 3.0, section 7(e) of the GNU General
 Public License states that no trademark rights are granted by the licence. This fork is not
-affiliated with, or endorsed by, the upstream authors or Masaryk University.
+affiliated with, or endorsed by, the upstream authors or Masaryk University. The icon shipped
+in this fork is the fork author's own artwork and does not come from the upstream project.

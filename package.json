@@ -1,17 +1,17 @@
 {
-  "name": "edulint-vscode",
-  "displayName": "EduLint",
-  "description": "EduLint VS Code Extension for students at the Faculty of Informatics, Masaryk University",
+  "name": "edulint-vscode-fork",
+  "displayName": "EduLint (fork)",
+  "description": "Fork of the EduLint VS Code extension: EduLint warnings with explanations for novice Python programmers",
   "icon": "assets/icon.png",
-  "publisher": "matousekm",
-  "version": "0.4.1",
+  "publisher": "jakubrasken",
+  "version": "0.4.2",
   "engines": {
     "vscode": "^1.82.0"
   },
   "license": "gpl-3.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/matousekm/edulint-vscode"
+    "url": "https://github.com/JakubRasken/edulint-vscode"
   },
   "categories": [
     "Linters"
