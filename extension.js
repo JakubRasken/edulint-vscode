@@ -2,6 +2,14 @@ const vscode = require('vscode')
 const { promisify } = require('util')
 const execFile = promisify(require('child_process').execFile)
 
+// edulint's JSON output can get large, so don't rely on execFile's 1 MB default.
+const MAX_OUTPUT_BYTES = 10 * 1024 * 1024
+
+/** Quote a value for safe use in a shell command line. */
+function shellQuote(value) {
+  return "'" + String(value).replace(/'/g, "'\\''") + "'"
+}
+
 /** @type {vscode.LogOutputChannel} */
 let log = null
 
@@ -44,7 +52,7 @@ async function activate(context) {
     }
     const filePath = activeEditor.document.uri.fsPath
     terminal.sendText(
-      `${pythonPath} -m edulint check "${filePath}"`
+      `${shellQuote(pythonPath)} -m edulint check ${shellQuote(filePath)}`
     )
   })
 
@@ -153,7 +161,11 @@ async function getEdulintOutput(filePath) {
 
   let out = {}
   try {
-    out = await execFile(pythonPath, ['-m', 'edulint', 'check', '--json', filePath])
+    out = await execFile(pythonPath, ['-m', 'edulint', 'check', '--json', filePath], {
+      // edulint output grows with the number of findings (~70 KB for a few hundred),
+      // so the 1 MB default is easy to exceed and would truncate the JSON.
+      maxBuffer: MAX_OUTPUT_BYTES,
+    })
   } catch (err) {
     out.stdout = err.stdout
     out.stderr = err.stderr
@@ -165,7 +177,12 @@ async function getEdulintOutput(filePath) {
     return { problems: [] }
   }
 
-  return JSON.parse(out.stdout)
+  try {
+    return JSON.parse(out.stdout)
+  } catch (err) {
+    log.error(`Could not parse edulint output: ${err}`)
+    return { problems: [] }
+  }
 }
 
 function deactivate() {}
